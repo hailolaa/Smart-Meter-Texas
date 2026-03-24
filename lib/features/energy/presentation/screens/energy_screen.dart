@@ -9,6 +9,8 @@ import '../widgets/energy_hero_card.dart';
 import '../widgets/ac_cost_card.dart';
 import '../widgets/metric_cards_row.dart';
 import '../widgets/usage_pattern_card.dart';
+import '../widgets/navigation_tile.dart';
+import '../widgets/promo_card.dart';
 
 class EnergyScreen extends StatelessWidget {
   const EnergyScreen({super.key});
@@ -45,6 +47,70 @@ class EnergyScreen extends StatelessWidget {
                       MetricCardsRow(summary: state.summary),
                       const SizedBox(height: 24),
                       UsagePatternCard(),
+                      const SizedBox(height: 16),
+                      NavigationTile(
+                        title: "Hourly Breakdown",
+                        subtitle: "Detailed usage patterns",
+                        icon: Icons.access_time_rounded,
+                        iconColor: AppColors.primaryBlue,
+                        iconBgColor: AppColors.primaryBlue.withValues(alpha: 0.1),
+                        onTap: () {
+                          // Navigate to hourly breakdown
+                        },
+                      ),
+
+
+                      const SizedBox(height: 16),
+                       PromoCard(
+                        badgeText: "Sponsored",
+                        title: "Smart Home Energy Kit",
+                        description: "Get a smart thermostat, LED kit and energy monitor",
+                        imageLayer: Container(
+                          color: Colors.blueGrey, // Placeholder for future network image
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      NavigationTile(
+                        title: "Usage History",
+                        subtitle: "30 days comprehensive view",
+                        icon: Icons.calendar_today_rounded,
+                        iconColor: AppColors.primaryGreen,
+                        iconBgColor: AppColors.primaryGreen.withValues(alpha: 0.1),
+                        onTap: () {
+                          // Navigate to usage history
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+                      PromoCard(
+                        badgeText: "Sponsored",
+                        title: "Free Solar Panel Estimate",
+                        description: "See how much you could save with solar energy at home. Free quote in minutes.",
+                        sponsorName: "Sunrun Solar",
+                        icon: Icons.campaign_outlined,
+                        button: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            "Get Estimate",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        imageLayer: Container(
+                          color: Colors.blueGrey, // Placeholder for future network image
+                        ),
+                      ),
+                      const SizedBox(height: 32),
                       
                       ],
                     ),
