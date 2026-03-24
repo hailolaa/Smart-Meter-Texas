@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
+import 'usage_line_chart.dart';
 
 class UsagePatternCard extends StatefulWidget {
   const UsagePatternCard({super.key});
@@ -108,15 +109,7 @@ class _UsagePatternCardState extends State<UsagePatternCard> {
 
         SizedBox(
           height: 220,
-          child: Center(
-            child: Text(
-              "Chart Area\n(We will add fl_chart here next!)",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ),
+          child: UsageLineChart(filter: selectedFilter),
         ),
       ],  
     ),
