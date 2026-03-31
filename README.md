@@ -1,17 +1,24 @@
 # smart_meter_texas
 
-A new Flutter project.
+Flutter client for SMT usage tracking.
 
-## Getting Started
+## Backend Integration
 
-This project is a starting point for a Flutter application.
+The app reads backend settings from compile-time defines:
 
-A few resources to get you started if this is your first Flutter project:
+- `SMT_BACKEND_BASE_URL` (default: `http://10.0.2.2:3000`)
+- `SMT_BACKEND_API_KEY` (optional; required if backend enables `x-api-key`)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Run example:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter run \
+  --dart-define=SMT_BACKEND_BASE_URL=http://10.0.2.2:3000 \
+  --dart-define=SMT_BACKEND_API_KEY=your_key_here
+```
+
+Current integrated flow:
+
+- `login` calls `POST /api/smt/login` and persists `sessionId`
+- `home/energy` calls `POST /api/smt/usage`
+- `history` calls `POST /api/smt/usage/history` (daily range)

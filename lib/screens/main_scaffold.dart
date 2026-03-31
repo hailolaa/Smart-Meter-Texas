@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import '../core/theme/app_theme.dart';
 import 'profile_screen.dart'; 
+import '../features/energy/presentation/screens/energy_screen.dart';
+import '../features/auth/presentation/screens/welcome_back_screen.dart';
+import '../features/onboarding/presentation/screens/meter_details.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -10,15 +13,15 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
-  int _currentIndex = 4; // Default to 4 (Account/Profile Tab)
+  int _currentIndex = 0; // Default to 4 (Account/Profile Tab)
 
   // Our list of screens. For now, most are just placeholders.
   final List<Widget> _screens = [
-    const Center(child: Text('Home')),
-    const Center(child: Text('History')),
+    const EnergyScreen(),
+    const WelcomeBackScreen(),
     const SizedBox(), // The center button doesn't swap to a screen in the bottom nav array
-    const Center(child: Text('Alerts')), // We will build this next
-    const ProfileScreen(), // Profile Screen
+    const MeterDetailsScreen(), 
+    const ProfileScreen(), 
   ];
 
   @override
@@ -37,7 +40,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -74,7 +77,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                   gradient: AppColors.primaryGradient,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primaryGreen.withOpacity(0.4),
+                      color: AppColors.primaryGreen.withValues(alpha: 0.4),
                       blurRadius: 15,
                       offset: const Offset(0, 8),
                     ),
@@ -94,11 +97,10 @@ class _MainScaffoldState extends State<MainScaffold> {
     final isActive = _currentIndex == index;
     final color = isActive ? AppColors.primaryBlue : AppColors.textMuted;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => setState(() => _currentIndex = index),
-      child: SizedBox(
-        width: 65,
+    return Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => setState(() => _currentIndex = index),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

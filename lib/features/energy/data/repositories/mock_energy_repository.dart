@@ -1,4 +1,5 @@
 import '../../domain/entities/energy_summary.dart';
+import '../../domain/entities/meter_read_request_result.dart';
 import '../../domain/repositories/energy_repository.dart';
 
 class MockEnergyRepository implements EnergyRepository {
@@ -17,6 +18,17 @@ class MockEnergyRepository implements EnergyRepository {
       kwhTrend: 0.08,
       centsPerKwh: 15.5,
       centsTrend: -0.03,
+      hasOdrData: true,
+      providerMessage: null,
+      readAt: null,
+    );
+  }
+
+  @override
+  Future<MeterReadRequestResult> requestCurrentMeterRead({String? meterNumber}) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return const MeterReadRequestResult(
+      message: 'Meter read request submitted for further processing.',
     );
   }
 }

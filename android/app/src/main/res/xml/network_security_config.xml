@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext (HTTP) traffic to our backend IP until HTTPS is set up -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">213.199.35.225</domain>
+    </domain-config>
+    <!-- Block cleartext everywhere else -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

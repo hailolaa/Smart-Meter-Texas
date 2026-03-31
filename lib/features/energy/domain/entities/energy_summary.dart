@@ -9,6 +9,9 @@ class EnergySummary {
   final double kwhTrend; // e.g., 0.08 (for 8% up)
   final double centsPerKwh;
   final double centsTrend; // e.g., -0.03 (for 3% down)
+  final bool hasOdrData;
+  final String? providerMessage;
+  final String? readAt;
 
   EnergySummary({
     required this.currentSpend,
@@ -21,5 +24,8 @@ class EnergySummary {
     required this.kwhTrend,
     required this.centsPerKwh,
     required this.centsTrend,
+    required this.hasOdrData,
+    this.providerMessage,
+    this.readAt,
   });
 }

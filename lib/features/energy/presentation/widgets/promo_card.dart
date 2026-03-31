@@ -123,7 +123,7 @@ class PromoCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(icon ?? null, color: Colors.grey[400], size: 20),
+                        Icon(icon, color: Colors.grey[400], size: 20),
                         const SizedBox(width: 8),
                         Text(
                           sponsorName?.toUpperCase() ?? "",
