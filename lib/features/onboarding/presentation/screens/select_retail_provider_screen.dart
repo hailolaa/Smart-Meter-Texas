@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/settings/app_settings_store.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/network/smt_api_client.dart';
 
 class SelectRetailProviderScreen extends StatefulWidget {
   const SelectRetailProviderScreen({super.key});
@@ -248,7 +249,37 @@ class _SelectRetailProviderScreenState extends State<SelectRetailProviderScreen>
                 ),
                 child: ElevatedButton(
                   onPressed: () async {
+                    // Persist selection locally
                     await AppSettingsStore.instance.setRetailProvider(selectedProvider);
+
+                    // Map selection to canonical provider name in backend
+                    final map = <String, String>{
+                      'txu': 'TXU Energy',
+                      'reliant': 'Reliant Energy',
+                      'direct': 'Direct Energy',
+                      'green': 'Green Mountain',
+                      'cirro': 'Cirro Energy',
+                      'gexa': 'Gexa Energy',
+                    };
+                    final canonical = map[selectedProvider];
+
+                    // Notify backend and set local rate from provider table (best-effort)
+                    try {
+                      final api = SmtApiClient();
+                      if (canonical != null) {
+                        await api.updateProviderName(canonical);
+                        final providers = await api.getProviders();
+                        final match = providers.firstWhere(
+                          (p) => (p['name']?.toString().toLowerCase() ?? '') == canonical.toLowerCase(),
+                          orElse: () => const <String, dynamic>{},
+                        );
+                        final cents = (match['energy_rate_cents'] as num?)?.toDouble();
+                        if (cents != null && cents > 0) {
+                          await AppSettingsStore.instance.setRatePerKwh(cents / 100.0);
+                        }
+                      }
+                    } catch (_) {/* non-fatal */}
+
                     await AppSettingsStore.instance.setHasCompletedOnboarding(true);
                     if (!context.mounted) return;
                     if (AppSettingsStore.instance.isFreeTrialActive) {

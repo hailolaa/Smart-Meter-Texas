@@ -56,9 +56,11 @@ class _SmtSignupGuideScreenState extends State<SmtSignupGuideScreen> {
           'SMT Account Setup',
           style: TextStyle(
             color: AppColors.textMain,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.2,
           ),
         ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -66,32 +68,57 @@ class _SmtSignupGuideScreenState extends State<SmtSignupGuideScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Hero banner with premium look
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
                 decoration: BoxDecoration(
                   gradient: AppColors.primaryGradient,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'New to Smart Meter Texas?',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      ),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryBlue.withValues(alpha: 0.22),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Create your SMT portal account first, then connect it to ElectricToday.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        height: 1.35,
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.person_add_alt_1_rounded, color: AppColors.primaryBlue, size: 30),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'New to Smart Meter Texas?',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            'Create your SMT portal account first, then connect it to ElectricToday.',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -119,8 +146,8 @@ class _SmtSignupGuideScreenState extends State<SmtSignupGuideScreen> {
                       'Registration Steps',
                       style: TextStyle(
                         color: AppColors.textMain,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                     SizedBox(height: 12),
@@ -138,7 +165,45 @@ class _SmtSignupGuideScreenState extends State<SmtSignupGuideScreen> {
                     ),
                     _GuideStep(
                       step: '4',
-                      text: 'Come back to ElectricToday and log in with SMT credentials + 17-digit ESIID.',
+                      text: 'Return to ElectricToday and log in with your SMT credentials.',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Tips card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.08)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.info_outline_rounded, color: AppColors.primaryBlue, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Helpful Tip',
+                            style: TextStyle(
+                              color: AppColors.textMain.withValues(alpha: 0.95),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'Your ESIID is a 17+ digit number. You can find it on your electricity bill or in the SMT portal after you sign in.',
+                            style: TextStyle(color: AppColors.textMuted, fontSize: 13, height: 1.35, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -10,6 +10,7 @@ import '../../../../core/navigation/presentation/screens/main_scaffold.dart';
 import '../../../../core/session/smt_session_store.dart';
 import '../../../../core/settings/app_settings_store.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/network/smt_api_client.dart';
 import '../../domain/entities/energy_summary.dart';
 import '../widgets/energy_hero_card.dart';
 import '../widgets/ac_cost_card.dart';
@@ -37,6 +38,7 @@ class _EnergyScreenState extends State<EnergyScreen> {
   late final EnergyBloc _energyBloc;
   late final bool _ownsBloc;
   StreamSubscription<void>? _settingsSubscription;
+  Map<String, dynamic>? _cheapest;
 
   @override
   void initState() {
@@ -47,6 +49,20 @@ class _EnergyScreenState extends State<EnergyScreen> {
     _settingsSubscription = AppSettingsStore.instance.changes.listen((_) {
       _energyBloc.add(RefreshEnergyData());
     });
+    _loadCheapest();
+  }
+
+  Future<void> _loadCheapest() async {
+    try {
+      final api = SmtApiClient();
+      final data = await api.getCheapestProvider(usageKwh: 1000);
+      if (!mounted) return;
+      setState(() {
+        _cheapest = data;
+      });
+    } catch (_) {
+      // Non-fatal
+    }
   }
 
   @override
@@ -139,6 +155,10 @@ class _EnergyScreenState extends State<EnergyScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildHeader(),
+              if (_cheapest != null) ...[
+                const SizedBox(height: 12),
+                _buildCheapestBanner(),
+              ],
               const SizedBox(height: 28),
 
               // Hero card
@@ -204,6 +224,50 @@ class _EnergyScreenState extends State<EnergyScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCheapestBanner() {
+    final data = _cheapest!;
+    final provider = (data['provider']?['name'] ?? '').toString();
+    final cents = (data['provider']?['energy_rate_cents'] as num?)?.toDouble() ?? 0;
+    final userSel = AppSettingsStore.instance.retailProvider ?? '';
+    final map = <String, String>{
+      'txu': 'TXU Energy',
+      'reliant': 'Reliant Energy',
+      'direct': 'Direct Energy',
+      'green': 'Green Mountain',
+      'cirro': 'Cirro Energy',
+      'gexa': 'Gexa Energy',
+    };
+    final userProvider = map[userSel] ?? userSel;
+    final isCheapestUser = userProvider.isNotEmpty && userProvider.toLowerCase() == provider.toLowerCase();
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.primaryGreen.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primaryGreen.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.local_offer_rounded, color: AppColors.primaryGreen, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              isCheapestUser
+                  ? 'Great choice! $provider is currently among the cheapest (~${cents.toStringAsFixed(1)}¢/kWh).'
+                  : 'Cheapest now: $provider at ~${cents.toStringAsFixed(1)}¢/kWh (1,000 kWh).',
+              style: const TextStyle(
+                color: AppColors.textMain,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -679,7 +679,8 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
 
   Future<void> _openHourlyDatePicker(_UsageDetailsData data) async {
     final lastDate = data.dbLatestDate ?? DateTime.now();
-    final firstDate = lastDate.subtract(const Duration(days: 90));
+    // Allow selecting any date in the last 12 months regardless of stored data.
+    final DateTime firstDate = lastDate.subtract(const Duration(days: 365));
     final initial = _pickedHourlyDate ?? lastDate;
 
     final picked = await showDatePicker(

@@ -335,6 +335,26 @@ class SmtApiClient {
     return _put('/api/user/esiid', payload: {'esiid': esiid});
   }
 
+  // ----- Providers -----
+
+  Future<List<Map<String, dynamic>>> getProviders() async {
+    final resp = await _get('/api/providers');
+    final data = resp['data'];
+    if (data is List) {
+      return data.cast<Map<String, dynamic>>();
+    }
+    return const <Map<String, dynamic>>[];
+  }
+
+  Future<Map<String, dynamic>?> getCheapestProvider({int usageKwh = 1000}) async {
+    final resp = await _get('/api/providers/cheapest?usage=$usageKwh');
+    return resp['data'] as Map<String, dynamic>?;
+  }
+
+  Future<Map<String, dynamic>> updateProviderName(String providerName) async {
+    return _put('/api/user/provider', payload: {'providerName': providerName});
+  }
+
   Future<Map<String, dynamic>> _put(
     String path, {
     required Map<String, dynamic> payload,

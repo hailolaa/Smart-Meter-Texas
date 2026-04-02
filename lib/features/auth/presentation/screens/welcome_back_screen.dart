@@ -176,7 +176,7 @@ class _WelcomeBackScreenState extends State<WelcomeBackScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Email Address",
+                              "SMT Username",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,

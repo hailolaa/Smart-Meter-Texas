@@ -1,4 +1,5 @@
 class AppRoutes {
+  static const String splash = '/';
   static const String login = '/login';
   static const String smtSignupGuide = '/smt-signup-guide';
   static const String homeType = '/home-type';

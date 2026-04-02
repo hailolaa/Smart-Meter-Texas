@@ -4,6 +4,7 @@ import '../../../../core/errors/error_mapper.dart';
 import '../../data/repositories/smt_auth_repository.dart';
 import 'auth_session_event.dart';
 import 'auth_session_state.dart';
+import '../../../../core/settings/app_settings_store.dart';
 
 class AuthSessionBloc extends Bloc<AuthSessionEvent, AuthSessionState> {
   AuthSessionBloc({required SmtAuthRepository repository})
@@ -24,6 +25,12 @@ class AuthSessionBloc extends Bloc<AuthSessionEvent, AuthSessionState> {
   ) async {
     emit(const AuthLoading());
     try {
+      // Enforce remember-me semantics on cold start.
+      if (!AppSettingsStore.instance.rememberMe) {
+        await _repository.clearLocalSession();
+        emit(const Unauthenticated());
+        return;
+      }
       final session = await _repository.checkSession();
       if (session == null) {
         emit(const Unauthenticated());
