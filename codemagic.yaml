@@ -1,0 +1,48 @@
+workflows:
+  ios-debug:
+    name: iOS Debug Build
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      groups:
+        - app_secrets
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build iOS
+        script: |
+          flutter build ios --debug --no-codesign \
+            --dart-define=SMT_BACKEND_BASE_URL=$SMT_BACKEND_BASE_URL \
+            --dart-define=SMT_BACKEND_API_KEY=$SMT_BACKEND_API_KEY
+    artifacts:
+      - build/ios/iphoneos/*.app
+
+  ios-release:
+    name: iOS Release Build
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      groups:
+        - app_secrets
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.yourcompany.smartmetertexas
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Build IPA
+        script: |
+          flutter build ipa --release \
+            --dart-define=SMT_BACKEND_BASE_URL=$SMT_BACKEND_BASE_URL \
+            --dart-define=SMT_BACKEND_API_KEY=$SMT_BACKEND_API_KEY
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
