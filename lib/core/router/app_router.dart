@@ -9,6 +9,7 @@ import '../../features/monetization/presentation/screens/paywall_screen.dart';
 import '../../features/monetization/presentation/screens/payment_method_screen.dart';
 import '../../features/monetization/presentation/screens/setup_success_screen.dart';
 import '../../features/admin/presentation/screens/admin_panel_screen.dart';
+import '../../features/providers/presentation/screens/providers_list_screen.dart';
 import '../navigation/presentation/screens/main_scaffold.dart';
 import 'app_routes.dart';
 import '../router/go_router_refresh_stream.dart';
@@ -69,6 +70,10 @@ GoRouter createAppRouter(AuthSessionBloc authBloc) {
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const WelcomeBackScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.providers,
+        builder: (context, state) => const ProvidersListScreen(),
       ),
       GoRoute(
         path: AppRoutes.smtSignupGuide,

@@ -19,6 +19,8 @@ import '../widgets/usage_pattern_card.dart';
 import '../widgets/navigation_tile.dart';
 import '../widgets/promo_carousel.dart';
 import '../widgets/business_store_card.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/router/app_routes.dart';
 
 class EnergyScreen extends StatefulWidget {
   const EnergyScreen({
@@ -155,10 +157,6 @@ class _EnergyScreenState extends State<EnergyScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildHeader(),
-              if (_cheapest != null) ...[
-                const SizedBox(height: 12),
-                _buildCheapestBanner(),
-              ],
               const SizedBox(height: 28),
 
               // Hero card
@@ -170,6 +168,12 @@ class _EnergyScreenState extends State<EnergyScreen> {
 
               // AC cost card
               ACcostCard(summary: summary),
+
+              // Cheapest provider banner
+              if (_cheapest != null) ...[
+                const SizedBox(height: 12),
+                _buildCheapestBanner(),
+              ],
               const SizedBox(height: 16),
 
               // Usage & Rate metric cards
@@ -266,6 +270,15 @@ class _EnergyScreenState extends State<EnergyScreen> {
                 fontSize: 13,
               ),
             ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () => context.push(AppRoutes.providers),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              foregroundColor: AppColors.primaryGreen,
+            ),
+            child: const Text('Show more'),
           ),
         ],
       ),

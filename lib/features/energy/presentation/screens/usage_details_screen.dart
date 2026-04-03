@@ -4,7 +4,9 @@ import '../../../../core/network/energy_realtime_client.dart';
 import '../../../../core/settings/app_settings_store.dart';
 import '../../../../core/network/smt_api_client.dart';
 import '../../../../core/session/smt_session_store.dart';
+import '../../../../core/theme/app_date_picker.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/texas_time.dart';
 import '../widgets/usage_trend_bar_chart.dart';
 
 class UsageDetailsScreen extends StatefulWidget {
@@ -90,7 +92,8 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
     final data = response['data'] as Map<String, dynamic>? ?? {};
     final rawPoints = data['dailyPoints'];
     final latestDateRaw = data['latestDate']?.toString();
-    final dbLatestDate = DateTime.tryParse(latestDateRaw ?? '') ?? DateTime.now();
+    final dbLatestDate =
+        DateTime.tryParse(latestDateRaw ?? '') ?? TexasTime.today();
 
     // Live ODR info — used to supplement the daily chart with today's reading.
     final meterRead = data['latestMeterRead'] as Map<String, dynamic>?;
@@ -229,7 +232,8 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
         );
       }
 
-      final anchorDay = _pickedHourlyDate ?? data.dbLatestDate ?? DateTime.now();
+      final anchorDay =
+          _pickedHourlyDate ?? data.dbLatestDate ?? TexasTime.today();
       final day = DateTime(anchorDay.year, anchorDay.month, anchorDay.day);
       final hourly = <int, double>{};
       for (final pt in intervalPoints) {
@@ -268,7 +272,7 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
 
       final dbEnd = points.isNotEmpty
           ? DateTime(points.last.date.year, points.last.date.month, points.last.date.day)
-          : DateTime.now();
+          : TexasTime.today();
       DateTime chartEnd = dbEnd;
 
       // Inject live ODR for today if it's ahead of the DB.
@@ -411,7 +415,7 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
                                           chart.dateSubtitle ??
                                               _formatDateSubtitle(
                                                   data.dbLatestDate ??
-                                                      DateTime.now()),
+                                                      TexasTime.today()),
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.w700,
@@ -678,7 +682,10 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
   // ---------------------------------------------------------------------------
 
   Future<void> _openHourlyDatePicker(_UsageDetailsData data) async {
-    final lastDate = data.dbLatestDate ?? DateTime.now();
+    // Keep calendar synced to Texas "today" even when DB latest lags by a day.
+    final texasToday = TexasTime.today();
+    final historyLastDate = data.dbLatestDate ?? texasToday;
+    final lastDate = historyLastDate.isBefore(texasToday) ? texasToday : historyLastDate;
     // Allow selecting any date in the last 12 months regardless of stored data.
     final DateTime firstDate = lastDate.subtract(const Duration(days: 365));
     final initial = _pickedHourlyDate ?? lastDate;
@@ -688,25 +695,9 @@ class _UsageDetailsScreenState extends State<UsageDetailsScreen> {
       initialDate: initial.isAfter(lastDate) ? lastDate : initial,
       firstDate: firstDate,
       lastDate: lastDate,
+      currentDate: texasToday,
       helpText: 'Select date for hourly data',
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryBlue,
-              onPrimary: Colors.white,
-              surface: AppColors.cardBackground,
-              onSurface: AppColors.textMain,
-            ),
-            dialogTheme: const DialogThemeData(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(24)),
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: buildAppDatePicker,
     );
 
     if (picked != null && mounted) {

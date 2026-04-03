@@ -6,6 +6,7 @@ class AppRoutes {
   static const String network = '/network';
   static const String meter = '/meter';
   static const String provider = '/provider';
+  static const String providers = '/providers';
   static const String dashboard = '/dashboard';
   static const String paywall = '/paywall';
   static const String payment = '/payment';

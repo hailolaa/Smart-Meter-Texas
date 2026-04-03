@@ -338,7 +338,9 @@ class SmtApiClient {
   // ----- Providers -----
 
   Future<List<Map<String, dynamic>>> getProviders() async {
-    final resp = await _get('/api/providers');
+    // Cache-bust to ensure fresh seeded data appears immediately
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    final resp = await _get('/api/providers?t=$ts');
     final data = resp['data'];
     if (data is List) {
       return data.cast<Map<String, dynamic>>();

@@ -4,7 +4,9 @@ import '../../../../core/network/energy_realtime_client.dart';
 import '../../../../core/network/smt_api_client.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/session/smt_session_store.dart';
+import '../../../../core/theme/app_date_picker.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/texas_time.dart';
 import 'usage_line_chart.dart';
 
 class UsagePatternCard extends StatefulWidget {
@@ -84,7 +86,9 @@ class _UsagePatternCardState extends State<UsagePatternCard> {
           if (!mounted ||
               reqId != (_requestSeq ?? 0) ||
               selectedFilter != requestedFilter)
+          {
             return;
+          }
           setState(() {
             _values = cached.values;
             _labels = cached.labels;
@@ -192,7 +196,9 @@ class _UsagePatternCardState extends State<UsagePatternCard> {
       if (!mounted ||
           reqId != (_requestSeq ?? 0) ||
           selectedFilter != requestedFilter)
+      {
         return;
+      }
       setState(() {
         _values = nextValues;
         _labels = nextLabels;
@@ -233,7 +239,7 @@ class _UsagePatternCardState extends State<UsagePatternCard> {
     final summaryData = summaryResponse['data'] as Map<String, dynamic>? ?? {};
     final latestDateRaw = summaryData['latestDate']?.toString();
     final dbLatestDate =
-        DateTime.tryParse(latestDateRaw ?? '') ?? DateTime.now();
+        DateTime.tryParse(latestDateRaw ?? '') ?? TexasTime.today();
 
     // Live ODR info — used only in the 24h daily chart.
     final meterRead = summaryData['latestMeterRead'] as Map<String, dynamic>?;
@@ -587,8 +593,10 @@ class _UsagePatternCardState extends State<UsagePatternCard> {
 
   Future<void> _openDatePicker() async {
     final anchor = _cachedAnchor;
-    // Latest date with data; don't allow future dates.
-    final lastDate = anchor?.dbLatestDate ?? DateTime.now();
+    // Keep calendar synced to Texas "today" even when DB latest lags by a day.
+    final texasToday = TexasTime.today();
+    final historyLastDate = anchor?.dbLatestDate ?? texasToday;
+    final lastDate = historyLastDate.isBefore(texasToday) ? texasToday : historyLastDate;
     // Allow going back up to 90 days.
     final firstDate = lastDate.subtract(const Duration(days: 90));
     final initial = _pickedDate ?? lastDate;
@@ -598,25 +606,9 @@ class _UsagePatternCardState extends State<UsagePatternCard> {
       initialDate: initial.isAfter(lastDate) ? lastDate : initial,
       firstDate: firstDate,
       lastDate: lastDate,
+      currentDate: texasToday,
       helpText: 'Select date for interval data',
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryBlue,
-              onPrimary: Colors.white,
-              surface: AppColors.cardBackground,
-              onSurface: AppColors.textMain,
-            ),
-            dialogTheme: const DialogThemeData(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(24)),
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: buildAppDatePicker,
     );
 
     if (picked != null && mounted) {
